@@ -5,7 +5,10 @@ ob_start();
 ini_set('session.cookie_httponly', '1');
 
 include("templates/page_header.php");
-include("lib/auth.php");
+
+if (!isset($_SESSION['authenticated'])) {
+	Header ("Location: /login.php");
+}
 
 
 include_once __DIR__.'/src/FixedBitNotation.php';
