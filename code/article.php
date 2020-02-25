@@ -3,12 +3,17 @@
 //First, check to see if we got an article id to lookup.
 //If there was no article id suppled, redirect to homepage.
 //Since we're potentially doing a redirect, this has to come before ANY html content.
+try{
 	if (!isset($_GET['aid'])) {
 		header("Location: /"); 
 	}
 	$aid = $_GET['aid'];
-	$result=get_article($dbconn, $aid);
-	$row = pg_fetch_array($result, 0); //There should only be one row
+	$result= @get_article($dbconn, $aid) or error(1);
+	$row = @pg_fetch_array($result, 0) or error(1); //There should only be one row
+
+}catch(Exception $e) { 
+	echo "<div id=\"alert\">Exception Caught -> " . $e->getMessage() . "<br><br><br><button id=\"alertbtn\" onclick=\"document.getElementById('alert').remove()\">[ close ]</button></div>";
+} 
 ?>
 <!doctype html>
 <html lang="en">
