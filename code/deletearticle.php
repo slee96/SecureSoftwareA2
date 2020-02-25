@@ -1,5 +1,8 @@
 <?php
 session_start();
+#Secured, user now has to be authenticated to delete article
+include("lib/auth.php");
+
 include("config.php");
 include("lib/db.php");
 
