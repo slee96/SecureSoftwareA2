@@ -1,1 +1,3 @@
-<?php phpinfo(); ?>
+<?php 
+# This is bad
+#phpinfo(); ?>
