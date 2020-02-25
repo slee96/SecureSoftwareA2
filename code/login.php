@@ -1,4 +1,6 @@
-<?php include("templates/page_header.php");?>
+<?php
+ini_set('session.cookie_httponly', '1');
+include("templates/page_header.php");?>
 <?php
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
