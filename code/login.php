@@ -2,14 +2,21 @@
 <?php
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-	$result = authenticate_user($dbconn, $_POST['username'], $_POST['password']);
-	if (pg_num_rows($result) == 1) {
-		$_SESSION['username'] = $_POST['username'];
-		$_SESSION['authenticated'] = True;
-		$_SESSION['id'] = pg_fetch_array($result)['id'];
-		//Redirect to admin area
-		header("Location: /admin.php");
-	}	
+	#Setting up values for prepared statments to be done in db.php
+	$user = $_POST["username"] ?? '';
+  	$pass = $_POST["password"] ?? '';
+	$result = authenticate_user($dbconn, $user, $pass);
+	try {
+		if (@pg_num_rows($result) or error(2) == 1) {
+			$_SESSION['username'] = $_POST['username'];
+			$_SESSION['authenticated'] = True;
+			$_SESSION['id'] = pg_fetch_array($result)['id'];
+			//Redirect to 2fa area
+			header("Location: /google-authenticator.php");
+		}
+	}catch(Exception $e) { 
+		echo "<div id=\"alert\">Exception Caught -> " . $e->getMessage() . "<br><br><br><button id=\"alertbtn\" onclick=\"document.getElementById('alert').remove()\">[ close ]</button></div>";
+	} 
 }
 
 ?>
