@@ -1,18 +1,21 @@
 <?php include("templates/page_header.php");?>
 <?php include("lib/auth.php") ?>
 <?php
-
-if($_SERVER['REQUEST_METHOD'] == 'GET') {
-	$aid = $_GET['aid'];	
-	$result=get_article($dbconn, $aid);
-	$row = pg_fetch_array($result, 0);
-} elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
-	$title = $_POST['title'];
-	$content = $_POST['content'];
-	$aid = $_POST['aid'];
-	$result=update_article($dbconn, $title, $content, $aid);
-	Header ("Location: /");
-}
+try {
+	if($_SERVER['REQUEST_METHOD'] == 'GET') {
+		$aid = $_GET['aid'];	
+		$result= get_article($dbconn, $aid) or error(1);
+		$row = pg_fetch_array($result, 0);
+	} elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
+		$title = $_POST['title'];
+		$content = $_POST['content'];
+		$aid = $_POST['aid'];
+		$result= update_article($dbconn, $title, $content, $aid) or error(1);
+		Header ("Location: /");
+	}
+}catch(Exception $e) { 
+		echo "<div id=\"alert\">Exception Caught -> " . $e->getMessage() . "<br><br><br><button id=\"alertbtn\" onclick=\"document.getElementById('alert').remove()\">[ close ]</button></div>";
+} 
 ?>
 
 <!doctype html>
