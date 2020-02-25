@@ -368,3 +368,22 @@ h1, h2, h3, h4, h5, h6 {
 .blog-footer p:last-child {
 	margin-bottom: 0;
 }
+
+     #alert{
+		 position:  absolute;
+		 top: 40%;
+		 left: 30%;
+		 right: 30%;
+		 margin: 0 auto;
+		 text-align: center;
+		 z-index: 1;
+		 background-color: white;
+		 padding: 30px 20px;
+		 color: black;
+		 font-weight: 700;
+		 border:  3px solid black;
+		 border-radius: 5px;
+	  }
+	#alertbtn:hover{
+		cursor: pointer;
+	}
