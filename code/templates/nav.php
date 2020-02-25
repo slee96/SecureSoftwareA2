@@ -14,7 +14,8 @@
 ?>
 </ul>
 <?php
-	if ($_SESSION['authenticated']) {
+	  ## && $_SESSION['authenticatedOTP']
+	if ($_SESSION['authenticated'] && $_SESSION['authenticatedOTP']) {
 ?>
 <a href="/logout.php"><span class="navbar-text">Logout <?php echo $_SESSION['username'] ?></a>
 </span>
