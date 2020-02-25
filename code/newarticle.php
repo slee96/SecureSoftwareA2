@@ -2,8 +2,9 @@
 <?php include("lib/auth.php") ?>
 <?php
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-		$author = $_SESSION['id'];	
-		add_article($dbconn, $_POST['title'], $_POST['content'], $author);
+		$author = $_SESSION['id'];
+		# Added htmlspecialchars() method around the content being submited, this is to prevent XSS
+		add_article($dbconn, htmlspecialchars($_POST['title']), htmlspecialchars($_POST['content']), $author);
 		Header ("Location: /");		
 	}
 ?>
