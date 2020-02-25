@@ -1,32 +1,9 @@
-<?php
-ini_set('session.cookie_httponly', '1');
-include("templates/page_header.php");?>
-<?php
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-	#Setting up values for prepared statments to be done in db.php
-	$user = $_POST["username"] ?? '';
-  	$pass = $_POST["password"] ?? '';
-	$result = authenticate_user($dbconn, $user, $pass);
-	try {
-		if (@pg_num_rows($result) or error(2) == 1) {
-			$_SESSION['username'] = $_POST['username'];
-			$_SESSION['authenticated'] = True;
-			$_SESSION['id'] = pg_fetch_array($result)['id'];
-			//Redirect to 2fa area
-			header("Location: /google-authenticator.php");
-		}
-	}catch(Exception $e) { 
-		echo "<div id=\"alert\">Exception Caught -> " . $e->getMessage() . "<br><br><br><button id=\"alertbtn\" onclick=\"document.getElementById('alert').remove()\">[ close ]</button></div>";
-	} 
-}
-
-?>
 <!doctype html>
 <html lang="en">
 <head>
 	<title>Login</title>
 	<?php include("templates/header.php"); ?>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/forge/0.8.2/forge.all.min.js"></script>
 <style>
 
 .form-signin {
@@ -77,5 +54,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <br>
 	<?php include("templates/contentstop.php"); ?>
 	<?php include("templates/footer.php"); ?>
+	
+	<script type="text/javascript">
+	$(".form-signin").submit(function(event){
+	  event.preventDefault();
+	  var password = generateHash();
+	  $.post( "login_verify.php", { username: $("input[name='username']").val(), password: password }).done(function( data ) {
+		  console.log(password);
+					if (data == "Wrong username/password"){
+							$("body").append("<div id=\"alert\">Wrong username/password<br><br><br><button id=\"alertbtn\" onclick=\"$('#alert').remove();\">[ close ]</button></div>");
+					}else if(data == "success"){
+							window.location = "/google-authenticator.php";
+					}else{
+							 $("body").append("<div id=\"alert\">Unknown error<br><br><br><button id=\"alertbtn\" onclick=\"$('#alert').remove();\">[ close ]</button></div>");
+					}
+			});
+	});
+	function generateHash()
+	{
+		var plainText = $("input[name='password']").val();
+		var md = forge.md.sha256.create();  
+		md.start();  
+		md.update(plainText, "utf8");  
+		var hashText = md.digest().toHex(); 
+		return hashText;
+	} 
+   </script> 
 </body>
 </html>
