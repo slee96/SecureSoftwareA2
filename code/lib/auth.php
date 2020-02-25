@@ -1,10 +1,8 @@
 <?php
-if (!$_SESSION['authenticated']) {
+if (!isset($_SESSION['authenticated'])) {
 	Header ("Location: /login.php");
-	if (!$_SESSION['authenticatedOTP']) {
-		Header ("Location: /google-authenticator.php");
-	}
 }
-
-
+if (!isset($_SESSION['authenticatedOTP']) && isset($_SESSION['authenticated'])) {
+	Header ("Location: /google-authenticator.php");
+}
 ?>
