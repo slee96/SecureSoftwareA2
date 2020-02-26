@@ -2,36 +2,38 @@
 #Google stuff
 declare(strict_types=1);
 ob_start();
+//Restrict sessions over https
 ini_set('session.cookie_httponly', '1');
 
 include("templates/page_header.php");
 
+//redirect the user to login.php if they are't authenticated via username/password 
 if (!isset($_SESSION['authenticated'])) {
 	Header ("Location: /login.php");
 }
 
-
+//Inclued libaries 
 include_once __DIR__.'/src/FixedBitNotation.php';
 include_once __DIR__.'/src/GoogleAuthenticator.php';
 include_once __DIR__.'/src/GoogleQrUrl.php';
 
+//GoogleAuthenticator Object
 $g = new \Sonata\GoogleAuthenticator\GoogleAuthenticator();
 
-
-#$secret = 'XVQ2UIGO75XRUKJO'; 
-
+// If code & secret were posted
 if (isset($_POST["code"]) && isset($_POST["secret"])){
+	// Check the vadility of the code sumited by the user
 	if ($g->checkCode($_POST["secret"], $_POST["code"])) {
+		//Create session, verifing successfull authentication  
 		$_SESSION['authenticatedOTP'] = True;
+		//Redirect users
 		header("Location: /admin.php");
 	} else {
+		// If the code was incorrect, generate a new secret 
 		global $secret;
 		$secret = $g->generateSecret();
-		try {
-			error(3);
-		}catch(Exception $e) { 
-			echo "<div id=\"alert\">" . $_POST["code"] . $e->getMessage() . "<br><br><br><button id=\"alertbtn\" onclick=\"document.getElementById('alert').remove()\">[ close ]</button></div>";
-		}	 
+		//throw error message
+		echo "<div id=\"alert\">" . $_POST["code"] . " - Wrong QR code<br><br><br><button id=\"alertbtn\" onclick=\"document.getElementById('alert').remove()\">[ close ]</button></div>";	 
 	}
 }else{
 	global $secret;
