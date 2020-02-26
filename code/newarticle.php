@@ -3,7 +3,7 @@
 <?php
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$author = $_SESSION['id'];
-		add_article($dbconn, htmlspecialchars($_POST['title']), htmlspecialchars($_POST['content']), $author);
+		add_article($dbconn, $_POST['title'], $_POST['content'], $author);
 		Header ("Location: /");		
 	}
 ?>
