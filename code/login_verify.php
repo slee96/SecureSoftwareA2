@@ -1,23 +1,24 @@
 <?php
+//Sets https only cookies
 ini_set('session.cookie_httponly', '1');
 include("templates/page_header.php");?>
 <?php
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-	#Setting up values for prepared statments to be done in db.php
-	$user = $_POST["username"] ?? '';
-  	$pass = $_POST["password"] ?? '';
-	$result = authenticate_user($dbconn, $user, $pass);
+	//Authentication query
+	$result = authenticate_user($dbconn, $_POST["username"], $_POST["password"]);
 	try {
+		// The @ supresses any php errors, the error() function is still fired although 
+		// The error() function prints custom error messages defined in 'page_header.php'
 		if (@pg_num_rows($result) or error(2) == 1) {
+			//Set sessions, "seccess" message will redirect the user via javascript
 			$_SESSION['username'] = $_POST['username'];
 			$_SESSION['authenticated'] = True;
 			$_SESSION['id'] = pg_fetch_array($result)['id'];
 			echo "success";
-			//Redirect to 2fa area
-			//header("Location: /google-authenticator.php");
 		}
 	}catch(Exception $e) { 
+		//Throws error 'Wrong username/password'
 		echo $e->getMessage();
 	} 
 }
