@@ -69,6 +69,7 @@ function get_article($dbconn, $aid) {
 		WHERE
 		aid= $1
 		LIMIT 1");
+	# Added htmlspecialchars() method around the content being submited, this is to prevent XSS along with the prepared statement
 	return run_query_prepared($dbconn, "get_article", array(htmlspecialchars($aid)));
 }
 
@@ -86,7 +87,7 @@ function add_article($dbconn, $title, $content, $author) {
 		(aid, title, author, stub, content) 
 		VALUES
 		($1 , $2 , $3 , $4, $5)");
-	return run_query_prepared($dbconn, "add_article", array($aid, $title, $author, $stub, $content));
+	return run_query_prepared($dbconn, "add_article", array(htmlspecialchars($aid), htmlspecialchars($title), $author, htmlspecialchars($stub), htmlspecialchars($content)));
 }
 
 function update_article($dbconn, $title, $content, $aid) {
@@ -104,7 +105,7 @@ function authenticate_user($dbconn, $username, $password) {
 }	
 
 function authenticate_article_owner($dbconn, $username, $aid) {
-	if(filter($username)){
+	if(filter($username) && filter($aid)){
 		//return one row where the article name and owner are the same
 		pg_prepare($dbconn, "authenticate_article_owner", "SELECT authors.id as id, authors.username as username, authors.role as role FROM authors JOIN articles on authors.id=articles.author WHERE authors.username= $1 AND articles.aid= $2 LIMIT 1");
 		return run_query_prepared($dbconn, "authenticate_article_owner", array($username, $aid));
