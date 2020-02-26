@@ -3,7 +3,6 @@
 <head>
 	<title>Login</title>
 	<?php include("templates/header.php"); ?>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/forge/0.8.2/forge.all.min.js"></script>
 <style>
 
 .form-signin {
@@ -55,29 +54,45 @@
 	<?php include("templates/contentstop.php"); ?>
 	<?php include("templates/footer.php"); ?>
 	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/forge/0.8.2/forge.all.min.js"></script>
 	<script type="text/javascript">
+	// Event listener for the form 
 	$(".form-signin").submit(function(event){
+	  // Prevents the default event of the from (the submit functionality, post/get)
 	  event.preventDefault();
+	  // Store the SHA-256 hash, generateHash() is a method from the libary 'forge' for hashing functionality 
 	  var password = generateHash();
-	  $.post( "login_verify.php", { username: $("input[name='username']").val(), password: password }).done(function( data ) {
-		  console.log(password);
+      // Ajax post request to 'login_verify.php'
+	  $.post( "login_verify.php", { 
+		  // post parameters
+		  username: $("input[name='username']").val(), 
+		  password: password }
+			// this function fires after the post request has been competed, and returns the contents of the page 'login_verify.php'
+			).done(function( data ) {
+		  			// Custom alert messages depending on the pages response
 					if (data == "Wrong username/password"){
 							$("body").append("<div id=\"alert\">Wrong username/password<br><br><br><button id=\"alertbtn\" onclick=\"$('#alert').remove();\">[ close ]</button></div>");
 					}else if(data == "success"){
+							// Redirect the user using javascript, all the Sessions have been set in 'login_verify.php'.
+							// But we can use the method 'Header "Location .." in php for redirection, 
+							// since we are using ajax the user, him/herself never actually navigates to this page. Therefor cannot be redirected using php
 							window.location = "/google-authenticator.php";
 					}else{
 							 $("body").append("<div id=\"alert\">Unknown error<br><br><br><button id=\"alertbtn\" onclick=\"$('#alert').remove();\">[ close ]</button></div>");
 					}
 			});
 	});
+	//Function to generate sha-256 hash
 	function generateHash()
 	{
+		// password the user entered
 		var plainText = $("input[name='password']").val();
+		//create sha-256 hash
 		var md = forge.md.sha256.create();  
 		md.start();  
 		md.update(plainText, "utf8");  
-		var hashText = md.digest().toHex(); 
-		return hashText;
+		// return the hashed text
+		return md.digest().toHex();
 	} 
    </script> 
 </body>
