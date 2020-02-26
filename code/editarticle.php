@@ -10,11 +10,21 @@ try {
 		$title = $_POST['title'];
 		$content = $_POST['content'];
 		$aid = $_POST['aid'];
-		$result= update_article($dbconn, $title, $content, $aid) or error(1);
-		Header ("Location: /");
+		//Check if the user created the article, returns one row if its true
+		$result = authenticate_article_owner($dbconn, $_SESSION["username"], $aid);
+		//Allow the article to be edited if the user created it or is an admin
+		if ($_SESSION["username"] == "admin" || @pg_num_rows($result) or error(3) == 1){
+			// Upadte the article
+			$result= update_article($dbconn, $title, $content, $aid) or error(1);
+			Header ("Location: /");
+		}else{
+			// If the user doesnt own the article, error message will be displayed
+			error(3);
+		}
 	}
 }catch(Exception $e) { 
-		echo "<div id=\"alert\">Exception Caught -> " . $e->getMessage() . "<br><br><br><button id=\"alertbtn\" onclick=\"document.getElementById('alert').remove()\">[ close ]</button></div>";
+		// Format for error message
+		echo "<div id=\"alert\">" . $e->getMessage() . "<br><br><br><button id=\"alertbtn\" onclick=\"document.getElementById('alert').remove()\">[ close ]</button></div>";
 } 
 ?>
 
