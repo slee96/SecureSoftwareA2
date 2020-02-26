@@ -1,7 +1,8 @@
 	<meta charset="utf-8">
 	<meta name="description" content="Assignment 1 - PHP Blog">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+	
+	<!-- Javascript / jQuery libary -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<link rel="manifest" href="/static/site.webmanifest">
 	<link rel="apple-touch-icon" href="/static/icon.png">
