@@ -20,9 +20,11 @@ New Post <span class="fa fa-plus" aria-hidden="true"></span>
 <tr><th>Post Title</th><th>Author</th><th>Date</th><th>Modify</th><th>Delete</th></tr>
 
 <?php
-# get articles by user or, if role is admin, all articles
+// get articles by user or, if role is admin, all articles
 		$result = get_article_list($dbconn);
 		while ($row = pg_fetch_array($result)) {
+			// Print articles owned by user, or all articles if the user is admin
+			if(($_SESSION["username"] == "admin" && $_SESSION["id"] == "1") || $row['author'] == $_SESSION["username"]){
 	?>
 <tr>
   <td><a href='article.php?aid=<?php echo $row['aid'] ?>'><?php echo $row['title'] ?></a></td>
@@ -31,7 +33,8 @@ New Post <span class="fa fa-plus" aria-hidden="true"></span>
   <td><a href="/editarticle.php?aid=<?php echo $row['aid'] ?>"><i class="fa fa-pencil-square-o fa-2x" aria-hidden="true"></i></a></td>
   <td><a href="/deletearticle.php?aid=<?php echo $row['aid'] ?>"><i class="fa fa-times fa-2x" aria-hidden="true"></i></a></td>
 </tr>
-	<?php } //close while loop ?>
+	<?php	} //close if loop 
+		} //close while loop ?>
 </table>
 	<?php include("templates/contentstop.php"); ?>
 	<?php include("templates/footer.php"); ?>
