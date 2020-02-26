@@ -4,7 +4,8 @@
 <ul class="navbar-nav mr-auto">
 <li><a class="nav-link" href="/">Home</a></li>
 <?php 
-	if ($_SESSION['authenticated']) {
+	// Only show admin link, if the user is authenticaticated via username/password and google qr-code
+	if ($_SESSION['authenticated'] && $_SESSION['authenticatedOTP']) {
 ?>
       <li class="nav-item">
         <a class="nav-link" href="/admin.php">Admin</a>
@@ -14,7 +15,7 @@
 ?>
 </ul>
 <?php
-	  ## && $_SESSION['authenticatedOTP']
+	  ## Only show logout link, if the user is authenticaticated via username/password and google qr-code
 	if ($_SESSION['authenticated'] && $_SESSION['authenticatedOTP']) {
 ?>
 <a href="/logout.php"><span class="navbar-text">Logout <?php echo $_SESSION['username'] ?></a>
