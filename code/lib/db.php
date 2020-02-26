@@ -21,14 +21,14 @@ function run_query($dbconn, $query) {
 	return $result;
 }
 
-#My function 
+// function for prepared statments 
 function run_query_prepared($dbconn, $query_name, $array) {
 	if ($debug) {
 		echo "$query_name<br>";
 	}
 	$result = pg_execute($dbconn, $query_name, $array);
+	//deallocate prepared statment name
 	pg_query($dbconn, "deallocate " . $query_name);
-	pg_close($dbconn);
 	if ($result == False and $debug) {
 		echo "Query failed<br>";
 	}
@@ -38,7 +38,7 @@ function run_query_prepared($dbconn, $query_name, $array) {
 
 //database functions
 function get_article_list($dbconn){
-	# Dont need prepared statment for this function 
+	// Dont need prepared statment for this function 
 	$query = "SELECT 
 		articles.created_on as date,
 		articles.aid as aid,
@@ -95,16 +95,25 @@ function update_article($dbconn, $title, $content, $aid) {
 }
 
 function authenticate_user($dbconn, $username, $password) {
-	# Also used prepated statment to mitigate sql injections
+	// Also used prepated statment to mitigate sql injections
 	if(filter($username) && filter($password)){
-		pg_prepare($dbconn, "auth", "SELECT authors.id as id, authors.username as username, authors.password as password, authors.role as role FROM authors WHERE username= $1 AND password= $2 LIMIT 1");
-		return run_query_prepared($dbconn, "auth", array($username, $password));
+		pg_prepare($dbconn, "auth_user", "SELECT authors.id as id, authors.username as username, authors.password as password, authors.role as role FROM authors WHERE username= $1 AND password= $2 LIMIT 1");
+		return run_query_prepared($dbconn, "auth_user", array($username, $password));
 	}
     return "banana";
 }	
 
+function authenticate_article_owner($dbconn, $username, $aid) {
+	if(filter($username)){
+		//return one row where the article name and owner are the same
+		pg_prepare($dbconn, "authenticate_article_owner", "SELECT authors.id as id, authors.username as username, authors.role as role FROM authors JOIN articles on authors.id=articles.author WHERE authors.username= $1 AND articles.aid= $2 LIMIT 1");
+		return run_query_prepared($dbconn, "authenticate_article_owner", array($username, $aid));
+	}
+    return "banana";
+}
+
 function filter($input){
-	# Created an 'if' statment using htmlspecialchars() and regex match to catch any special charcters not caught by htmlspecialchars()
+	// Created an 'if' statment using htmlspecialchars() and regex match to catch any special charcters not caught by htmlspecialchars()
 	if(!preg_match('/^(["\'\;#]).*\1$/m', $input) && htmlspecialchars($input, ENT_QUOTES) == $input){
 		return true;	
 	}else{
